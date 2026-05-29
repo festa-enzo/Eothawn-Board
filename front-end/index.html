@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pt_BR">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="vieport" content="width=device-width, initial-scale=1.0">
+        <title>EoThawn Board</title>
+
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <body>
+        <header>
+            <h1>EoThawn Board</h1>
+            <h2>O calendário ideal para uma vida veloz!</h2>
+
+
+        </header>
+
+        <h2 style ="position: fixed; bottom: 81%; right: 86%; z-index: 9999">Segunda </h2>
+        <h2 style ="position: fixed; bottom: 81%; right: 74%; z-index: 9999">Terça</h2>
+        <h2 style ="position: fixed; bottom: 81%; right: 60%; z-index: 9999">Quarta</h2>
+        <h2 style ="position: fixed; bottom: 81%; right: 46%; z-index: 9999">Quinta</h2>
+        <h2 style ="position: fixed; bottom: 81%; right: 35%; z-index: 9999">Sexta</h2>
+        <h2 style ="position: fixed; bottom: 81%; right: 21%; z-index: 9999">Sábado</h2>
+        <h2 style ="position: fixed; bottom: 81%; right: 5%; z-index: 9999">Domingo</h2>
+
+        <button class="botao-flutuante" id="btnNovaTarefa"></button>
+
+        <div id="formulario">
+            <form>
+
+        <label>Qual a tarefa?</label>
+        <input type="text" id="tarefa">
+
+        <label>Qual o dia da tarefa?</label>
+        <select id="dia">
+            <option>Segunda</option>
+            <option>Terça</option>
+            <option>Quarta</option>
+            <option>Quinta</option>
+            <option>Sexta</option>
+            <option>Sábado</option>
+            <option>Domingo</option>
+        </select>
+
+        <label>Qual o horário da tarefa?</label>
+        <input type="time" id="horario">
+
+        <button type="submit">
+            Salvar
+        </button>
+
+    </form>
+</div>
+    <script src="script.js"></script>
+
+    </body>
+</html>

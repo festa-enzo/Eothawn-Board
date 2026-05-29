@@ -1,0 +1,54 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #0f172a;
+  color: white;
+  font-family: Arial, Helvetica, sans-serif;
+  min-height: 100vh;
+  padding: 20px;
+}
+header {
+  margin-bottom: 30px;
+}
+
+
+.botao-flutuante {
+    position: fixed; /* Fixa o botão na tela */
+    bottom: 20px;    /* Distância da parte inferior */
+    right: 20px;     /* Distância da parte direita */
+    z-index: 9999;   /* Garante que ele fique na frente de outros elementos */
+    
+    /* Estética do botão */
+    width: 70px;
+    height: 70px;
+    border-radius: 50%; /* Deixa o botão redondo */
+    background-color: #f8fc06; /* Cor de fundo (ex: verde WhatsApp) */
+    color: white;
+    border: none;
+    font-size: 28px;
+    cursor: pointer;
+    background-image: url('images/reverse.png');
+    background-size: 90%;        /* Ajusta o tamanho da imagem dentro do botão */
+    background-repeat: no-repeat; /* Evita que a imagem se repita */
+    background-position: center 70%;  /* Centraliza a imagem */
+    
+    /* Sombra para dar o efeito de flutuação */
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.25); 
+    
+    /* Transição suave ao passar o mouse */
+    transition: transform 0.2s ease, background-color 0.2s;
+}
+
+/* Efeito ao passar o mouse */
+.botao-flutuante:hover {
+    transform: scale(1.1); /* Aumenta levemente o botão */
+    background-color: #9a9c02;
+}
+
+#formulario {
+    display: none;
+}
