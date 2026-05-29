@@ -52,3 +52,9 @@ header {
 #formulario {
     display: none;
 }
+
+.card {
+    background: rgb(255, 0, 0);
+    padding: 40px;
+    border-radius: 60px;
+}
