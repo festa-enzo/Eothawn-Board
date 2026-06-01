@@ -5,7 +5,7 @@
 }
 
 body {
-  background-color: #0f172a;
+  background-color: #13293D;
   color: white;
   font-family: Arial, Helvetica, sans-serif;
   min-height: 100vh;
@@ -26,7 +26,7 @@ header {
     width: 70px;
     height: 70px;
     border-radius: 50%; /* Deixa o botão redondo */
-    background-color: #f8fc06; /* Cor de fundo (ex: verde WhatsApp) */
+    background-color: #1b98e0; /* Cor de fundo (ex: verde WhatsApp) */
     color: white;
     border: none;
     font-size: 28px;
@@ -46,7 +46,7 @@ header {
 /* Efeito ao passar o mouse */
 .botao-flutuante:hover {
     transform: scale(1.1); /* Aumenta levemente o botão */
-    background-color: #9a9c02;
+    background-color: #247ba0;
 }
 
 #formulario {
@@ -54,7 +54,81 @@ header {
 }
 
 .card {
-    background: rgb(255, 0, 0);
+    color: #13293D;
+    background: #e8f1f2;
     padding: 40px;
     border-radius: 60px;
+}
+
+.agenda {
+    display: flex;
+}
+
+.dia {
+    width: 300px;
+    min-height: 500px;
+    text-align: center;
+}
+
+.card {
+    margin: 10px;
+    padding: 10px;
+    border-radius: 10px;
+}
+
+#formulario form {
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 12px;
+
+    width: 350px;
+
+    padding: 25px;
+
+    border-radius: 12px;
+}
+
+#formulario input,
+#formulario select {
+
+    padding: 10px;
+
+    border-radius: 8px;
+
+    font-size: 16px;
+}
+
+#formulario label {
+    font-weight: bold;
+}
+
+#formulario button {
+
+    padding: 12px;
+
+    border: none;
+
+    border-radius: 8px;
+
+    cursor: pointer;
+
+    font-size: 16px;
+}
+
+#formulario {
+    display: none;
+
+    position: fixed;
+
+    top: 50%;
+    left: 50%;
+
+    transform: translate(-50%, -50%);
+
+    z-index: 1000;
+    background-color: #006494;
+    border-radius: 10%; /* Deixa o botão redondo */
+
 }

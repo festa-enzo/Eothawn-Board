@@ -23,7 +23,7 @@ form.addEventListener("submit", (event) => {
 
     const card = document.createElement("div");
 
-    card.textContent = `${horario} - ${tarefa}`;
+    card.textContent = `${horario} | ${tarefa}`;
 
     card.classList.add("card");
 
@@ -40,5 +40,7 @@ form.addEventListener("submit", (event) => {
     const coluna = document.getElementById(listas[dia]);
 
     coluna.appendChild(card);
+
+    form.reset();
 
 });
