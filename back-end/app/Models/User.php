@@ -14,7 +14,7 @@ class usuario{
         $this->emailUsuario = $emailUsuario;
 
         $this->validaSenha($senhaUsuario);
-        $this->senhaUsuario = $senhaUsuario;
+        $this->senhaUsuario = password_hash($senha, PASSWORD_DEFAULT)
     }
     
     private function validaNome($nomeUsuario){
@@ -31,11 +31,21 @@ class usuario{
 
     }
 
-    private function validaSenha($senhaUsuario){
-        if (!strlen($senhaUsuario) >= 8 && !strlen($senhaUsuario) <= 20 || !preg_match('/^[0-9A-Za-z\W_ ]+$/', $senhaUsuario)){
+    private function validaSenha($senha){
+        if (strlen($senha) < 8 && strlen($senha) > 20 || !preg_match('/^[0-9A-Za-z\W_ ]+$/', $senha)){
             throw new InvalidArgumentException("Senha Inválida, certifique-se que sua senha tenha: \n-Entre 8 a 20 caracteres;\n-Uma letra maiúscula e uma minúscula;\n-Um simbolo especial.")
 
         }
     }
+    public function getNome(): string {
+        return $this->nome;
+    }
 
+    public function getEmail(): string {
+        return $this->email;
+    }
+
+    public function getSenhaHash(): string {
+        return $this->senhaHash;
+    }
 }
