@@ -41,4 +41,22 @@ class AuthController {
             ], 500);
         }
     }
+
+    public function login($data) {
+        // Implementação simples (melhorar depois)
+        $stmt = $this->pdo->prepare("SELECT * FROM usuarios WHERE email = ?");
+        $stmt->execute([$data['email']]);
+        $user = $stmt->fetch();
+
+        if ($user && password_verify($data['senha'], $user['senha'])) {
+            $token = bin2hex(random_bytes(32));
+            Response::json([
+                'success' => true,
+                'token' => $token,
+                'user' => ['id' => $user['id'], 'nome' => $user['nome']]
+            ]);
+        } else {
+            Response::json(['success' => false, 'message' => 'Credenciais inválidas'], 401);
+        }
+    }
 }

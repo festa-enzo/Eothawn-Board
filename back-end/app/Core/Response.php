@@ -5,7 +5,7 @@ class Response {
         http_response_code($status);
         header('Content-Type: application/json');
         header('Access-Control-Allow-Origin: *');
-        echo json_encode($data);
+        echo json_encode($data, JSON_UNESCAPED_UNICODE);
         exit;
     }
 }
