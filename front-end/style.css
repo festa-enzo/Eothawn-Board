@@ -54,8 +54,8 @@ header {
 }
 
 .card {
-    color: #13293D;
-    background: #e8f1f2;
+    color: antiquewhite;
+    background: #006494;
     padding: 40px;
     border-radius: 60px;
 }
@@ -131,4 +131,11 @@ header {
     background-color: #006494;
     border-radius: 10%; /* Deixa o botão redondo */
 
+}
+
+.dia {
+  background-color: antiquewhite;
+  color: #13293D;
+  border-radius: 5%; /* Deixa o botão redondo */
+  width: 500px;
 }
