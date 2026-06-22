@@ -11,18 +11,18 @@ class usuario{
 
         $this->email = $email;
 
-        $this->senha = password_hash($senha, PASSWORD_BCRYPT)
+        $this->senha = password_hash($senha, PASSWORD_BCRYPT);
     }
 
     public function getNome(): string {
-        return $this->nome->getValue():
+        return $this->nome->getValue();
     }
 
     public function getEmail(): string {
-        return $this->email->getValue():
+        return $this->email->getValue();
     }
 
     public function getSenhaHash(): string {
-        return $this->senhaHash->getValue():
+        return $this->senha->getValue();
     }
 }

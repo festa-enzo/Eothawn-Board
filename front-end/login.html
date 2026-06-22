@@ -4,23 +4,38 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Agenda</title>
+
+            <link rel="stylesheet" href="style/login.css">
+
 </head>
 <body>
-
-    <div class="login-container">
-        <!-- ... todo o conteúdo do formulário igual ... -->
-        
-        <form id="loginForm">
-            <!-- campos de email e senha -->
-            <button type="submit" class="btn-login">Entrar</button>
-        </form>
-
-        <div class="link">
-            <p>Não tem conta? <a href="register.html">Cadastre-se</a></p>
+<div class="login-box">
+        <div class="header">
+            <h1>📅 Agenda Semanal</h1>
+            <p>Faça login para continuar</p>
         </div>
 
-        <div id="mensagem" class="error"></div>
+        <div class="form-container">
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="email">E-mail</label>
+                    <input type="email" id="email" placeholder="seu@email.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="senha">Senha</label>
+                    <input type="password" id="senha" placeholder="Sua senha" required>
+                </div>
+
+                <button type="submit" class="btn-login">Entrar</button>
+            </form>
+
+            <div id="mensagem" class="error-msg"></div>
+
+            <div class="footer">
+                Não tem conta? <a href="register.html">Cadastre-se</a>
+            </div>
+        </div>
     </div>
-    <script src="js/auth.js"></script>
-</body>
-</html>
+
+<script src='js/auth.js'></script>
