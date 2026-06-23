@@ -18,7 +18,7 @@ if (form) {
         }
 
         try {
-            const response = await fetch('http://localhost/backend/public/index.php/api/login', {
+            const response = await fetch('http://api.eothawn.com/index.php/api/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

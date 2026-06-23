@@ -1,10 +1,14 @@
 <?php
 
 // Carrega as configurações e classes principais
-require_once '../config/database.php';
+# require_once '../config/database.php';
 require_once '../app/Core/Response.php';
 require_once '../app/Core/Auth.php';
 
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    Response::cors();
+    exit(0);   // Finaliza a requisição preflight
+}
 // Carrega as rotas
 $routes = require_once '../routes/api.php';
 
