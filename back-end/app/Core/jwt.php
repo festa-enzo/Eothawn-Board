@@ -8,7 +8,7 @@ use PDO;
 class JWTHandler
 {
     private string         $secret;
-    private static         $algorithm;
+    private string         $algorithm;
     private int            $accessTtl;
     private int            $refreshTtl;
     private                $pdo;
@@ -23,7 +23,7 @@ class JWTHandler
         $this->pdo = $pdo;
     }
 
-    public static function generateToken($user){
+    public function generateToken(array $user): string{
         $payload = [
             'iss'   =>  'agenda-semanal',
             'sub'   =>  $user['id'],
@@ -33,7 +33,7 @@ class JWTHandler
             'exp'   =>  time()  +  $this->accessTtl
         ];
 
-        return JWT::encode($payload, self::$secret, self::$algorithm);
+        return JWT::encode($payload, $this->secret, $this->$algorithm);
     }
 
     public function generateRefreshToken(int $usuario_id): string
@@ -54,7 +54,7 @@ class JWTHandler
 
     public static function decodeToken($token) {
         try {
-            $decoded = JWT::decode($token, new Key(self::$secret_key, self::$algorithm));
+            $decoded = JWT::decode($token, new Key($this->$secret_key, $this->$algorithm));
             return (array) $decoded;
         } catch (Exception $e) {
             return null;

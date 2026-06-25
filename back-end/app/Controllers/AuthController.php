@@ -1,7 +1,8 @@
 <?php
 
-require_once '../Models/User.php';
-require_once '../Core/Response.php';
+require_once 'back-end/app/Models/User.php';
+require_once 'back-end/app/Models/Auth.php';
+require_once 'back-end/app/Core/Response.php';
 
 class AuthController {
 
@@ -43,20 +44,30 @@ class AuthController {
     }
 
     public function login($data) {
-        // Implementação simples (melhorar depois)
-        $stmt = $this->pdo->prepare("SELECT * FROM usuarios WHERE email = ?");
-        $stmt->execute([$data['email']]);
-        $user = $stmt->fetch();
+    $usuarioModel = new AuthModel($this->pdo);
+    $user = $usuarioModel->findByEmail($data['email']);
 
-        if ($user && password_verify($data['senha'], $user['senha'])) {
-            $token = bin2hex(random_bytes(32));
-            Response::json([
-                'success' => true,
-                'token' => $token,
-                'user' => ['id' => $user['id'], 'nome' => $user['nome']]
-            ]);
-        } else {
-            Response::json(['success' => false, 'message' => 'Credenciais inválidas'], 401);
-        }
+    if ($user && password_verify($data['senha'], $user['senha'])) {
+        
+        $jwtHandler = new JWTHandler($this->pdo);
+
+        $accessToken  = $jwtHandler->generateAccessToken($user);
+        $refreshToken = $jwtHandler->generateRefreshToken($user['id']);
+
+        // Envia Refresh Token como Cookie seguro
+        setcookie('refresh_token', $refreshToken, [
+            'expires'  => time() + $jwtHandler->refreshTtl, // ou usar $this->refreshTtl
+            'path'     => '/',
+            'httponly' => true,
+            'secure'   => false,     // mude para true em produção (HTTPS)
+            'samesite' => 'Strict'
+        ]);
+
+        Response::json([
+            'success'     => true,
+            'accessToken' => $accessToken,
+            'user'        => ['id' => $user['id'], 'nome' => $user['nome']]
+        ]);
+    }
     }
 }

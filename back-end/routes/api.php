@@ -7,6 +7,8 @@ $routes = [
     'POST' => [
         '/api/register' => ['AuthController', 'register'],
         '/api/login'    => ['AuthController', 'login'],
+        '/api/tasks'           => ['TaskController', 'create'],
+        '/api/tasks/move'      => ['TaskController', 'move'],
         // '/api/logout'   => ['AuthController', 'logout'],
     ],
 
@@ -15,10 +17,10 @@ $routes = [
         '/api/columns'  => ['ColumnController', 'index'],
     ],
 
-    'POST' => [
-        '/api/tasks'           => ['TaskController', 'create'],
-        '/api/tasks/move'      => ['TaskController', 'move'],      // mover tarefa entre colunas
-    ],
+#    'POST' => [
+#        '/api/tasks'           => ['TaskController', 'create'],
+#        '/api/tasks/move'      => ['TaskController', 'move'],      // mover tarefa entre colunas
+#    ],
 
     'PUT' => [
         '/api/tasks/{id}'      => ['TaskController', 'update'],

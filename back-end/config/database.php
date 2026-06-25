@@ -8,7 +8,7 @@ class Database {
         $host     = 'localhost';
         $dbname   = 'agenda_semanal';
         $user     = 'agenda_user';
-        $pass     = 'Uninove@10';   // ← Troque pela sua senha
+        $pass     = 'Uninove@10';   
 
         try {
             $this->pdo = new PDO(

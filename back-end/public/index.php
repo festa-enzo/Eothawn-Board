@@ -1,7 +1,7 @@
 <?php
 
 // Carrega as configurações e classes principais
-# require_once '../config/database.php';
+require_once '../config/database.php';
 require_once '../app/Core/Response.php';
 require_once '../app/Core/Auth.php';
 
@@ -14,6 +14,7 @@ $routes = require_once '../routes/api.php';
 
 $pdo = Database::getConnection();
 
+#$uri = str_replace('\\', '', parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $method = $_SERVER['REQUEST_METHOD'];
 

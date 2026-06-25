@@ -1,5 +1,5 @@
 <?php
-class usuario{
+class Usuario{
 
     Private nome $nome;
     Private email $email;
@@ -13,6 +13,8 @@ class usuario{
 
         $this->senha = password_hash($senha, PASSWORD_BCRYPT);
     }
+
+    public function findByEmail(string $email):
 
     public function getNome(): string {
         return $this->nome->getValue();
