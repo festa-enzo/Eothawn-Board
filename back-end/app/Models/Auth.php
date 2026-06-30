@@ -6,7 +6,7 @@ use PDO;
 class AuthModel {
 
     public function __construct($pdo){
-        $this ->pdo = $pdo
+        $this ->pdo = $pdo;
     }
 
     public function findByEmail(string $email): ?array
