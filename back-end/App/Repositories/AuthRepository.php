@@ -1,13 +1,12 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Repositories;
-
+require_once __DIR__ . '/BaseRepository.php';
 use PDO;
 
 class AuthRepository extends BaseRepository
 {
-    protected string $table = 'users';
+    protected string $table = 'usuarios';
 
     protected array $sortableColumns = ['id', 'name', 'email', 'created_at'];
 

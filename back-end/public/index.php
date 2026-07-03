@@ -2,8 +2,8 @@
 
 // Carrega as configurações e classes principais
 require_once '../config/database.php';
-require_once '../app/Core/Response.php';
-require_once '../app/Core/Auth.php';
+require_once '../App/Core/Response.php';
+require_once '../App/Core/Auth.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     Response::cors();
@@ -28,7 +28,7 @@ if (isset($routes[$method][$uri])) {
     $methodName     = $controllerInfo[1];
 
     // Inclui o controller dinamicamente
-    require_once "../app/Controllers/{$controllerName}.php";
+    require_once "../App/Controllers/{$controllerName}.php";
 
     $controller = new $controllerName($pdo);
     

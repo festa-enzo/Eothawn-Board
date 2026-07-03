@@ -1,8 +1,8 @@
 <?php
 
-require_once 'back-end/app/Models/User.php';
-require_once 'back-end/app/Models/Auth.php';
-require_once 'back-end/app/Core/Response.php';
+require_once 'back-end/App/Models/User.php';
+require_once 'back-end/App/Repositories/AuthRepository.php';
+require_once 'back-end/App/Core/Response.php';
 
 class AuthController {
 

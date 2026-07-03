@@ -1,7 +1,6 @@
 <?php
 
-use app\config\database;
-use app\Repositories\Paginator;
+require_once '../config/database.php';
 use PDO;
 
 abstract class BaseRepository {
