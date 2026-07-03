@@ -1,5 +1,5 @@
 <?php
-declare(strict_types=1);
+/* declare(strict_types=1);
 
 require_once 'back-end/App/Repositories/BaseRepository.php';
 require_once 'back-end/App/Repositories/AuthRepository.php';
@@ -24,4 +24,4 @@ class AuthModel {
     }
 
 
-}
+} */

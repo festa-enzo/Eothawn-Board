@@ -1,6 +1,10 @@
 <?php
-/*
-class Task {
+declare(strict_types=1);
+
+require_once __DIR__ . '/BaseRepository.php';
+use PDO;
+
+class TaskRepository extends BaseRepository {
     private $pdo;
 
     public function __construct($pdo) {
@@ -41,4 +45,4 @@ class Task {
     public function delete($id, $user_id) {
         // ... (implementar depois)
     }
-} */
+}

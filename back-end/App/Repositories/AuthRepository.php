@@ -6,7 +6,7 @@ use PDO;
 
 class AuthRepository extends BaseRepository
 {
-    protected string $table = 'usuarios';
+    protected string $table = 'user';
 
     protected array $sortableColumns = ['id', 'name', 'email', 'created_at'];
 
@@ -38,12 +38,12 @@ class AuthRepository extends BaseRepository
         )->execute([':user_id' => $userId]);
 
         $stmt = $this->db->prepare(
-            "INSERT INTO refresh_tokens (user_id, token, expires_at, created_at)
+            "INSERT INTO refresh_tokens (user_id, refresh_token, expires_at, created_at)
              VALUES (:user_id, :token, :expires_at, NOW())"
         );
         $stmt->execute([
             ':user_id'    => $userId,
-            ':token'      => $token,
+            ':refresh_token'      => $token,
             ':expires_at' => $expiresAt,
         ]);
     }
@@ -54,7 +54,7 @@ class AuthRepository extends BaseRepository
             "SELECT rt.*, u.id AS user_id, u.email, u.role
              FROM refresh_tokens rt
              JOIN users u ON rt.user_id = u.id
-             WHERE rt.token = :token AND rt.expires_at > NOW()
+             WHERE rt.refresh_token = :token AND rt.expires_at > NOW()
              LIMIT 1"
         );
         $stmt->bindValue(':token', $token);

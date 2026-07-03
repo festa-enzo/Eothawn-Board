@@ -15,10 +15,10 @@ class AuthController {
     public function register($data) {
         try {
             // Cria o objeto Usuario (faz todas as validações)
-            $usuario = new Usuario($data['nome'], $data['email'], $data['senha']);
+            $usuario = new Usuario($data['name'], $data['email'], $data['password']);
 
             // Salva no banco
-            $stmt = $this->pdo->prepare("INSERT INTO usuarios (nome, email, senha) VALUES (?, ?, ?)");
+            $stmt = $this->pdo->prepare("INSERT INTO users (name, email, password) VALUES (?, ?, ?)");
             $stmt->execute([
                 $usuario->getNome(),
                 $usuario->getEmail(),
@@ -44,10 +44,10 @@ class AuthController {
     }
 
     public function login($data) {
-    $usuarioModel = new AuthModel($this->pdo);
+    $usuarioModel = new AuthRepository($this->pdo);
     $user = $usuarioModel->findByEmail($data['email']);
 
-    if ($user && password_verify($data['senha'], $user['senha'])) {
+    if ($user && password_verify($data['password'], $user['password'])) {
         
         $jwtHandler = new JWTHandler($this->pdo);
 
