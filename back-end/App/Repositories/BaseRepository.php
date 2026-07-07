@@ -1,6 +1,6 @@
 <?php
 
-require_once '../config/database.php';
+require_once __DIR__ . '/../../Config/Database.php';
 use PDO;
 
 abstract class BaseRepository {
@@ -12,7 +12,7 @@ abstract class BaseRepository {
     protected array $sortableColumns = ['id', 'created_at', 'updated_at'];
 
     public function __construct(){
-        $this->db = connection::getConnection();
+        $this->db = Database::getConnection();
     }
 
     public function findAll(array $options = []): array
