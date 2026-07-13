@@ -10,7 +10,7 @@ class Database {
     private function __construct() {
         $host     = 'localhost';
         $dbname   = 'agenda_semanal';
-        $user     = 'agenda_user';
+        $user     = 'root';
         $pass     = 'Uninove@10';   
 
         try {

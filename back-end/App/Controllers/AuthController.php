@@ -66,8 +66,14 @@ class AuthController {
         Response::json([
             'success'     => true,
             'accessToken' => $accessToken,
-            'user'        => ['id' => $user['id'], 'nome' => $user['nome']]
+            'user'        => ['id' => $user['id'], 'nome' => $user['name']]
         ]);
+
+        return;
     }
+    Response::json([
+        'success' => false,
+        'message' => 'E-mail ou senha inválidos.'
+    ], 401);
     }
 }

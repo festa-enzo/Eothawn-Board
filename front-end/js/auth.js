@@ -28,6 +28,13 @@ if (form) {
 
             const data = await response.json();
 
+            if (!response.ok) {
+             alert(data.message);
+             return;
+            }
+
+            console.log("Login realizado!", data);
+
             if (data.success) {
                 localStorage.setItem('token', data.token);
                 localStorage.setItem('user', JSON.stringify(data.user));

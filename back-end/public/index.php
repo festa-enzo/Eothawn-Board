@@ -5,8 +5,10 @@ require_once __DIR__ . '/../Config/Database.php';
 require_once '../App/Core/Response.php';
 require_once '../App/Core/Auth.php';
 
+Response::cors();
+
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    Response::cors();
+    http_response_code(200);
     exit(0);   // Finaliza a requisição preflight
 }
 // Carrega as rotas
