@@ -1,27 +1,77 @@
 <?php
-/* declare(strict_types=1);
 
-require_once 'back-end/App/Repositories/BaseRepository.php';
-require_once 'back-end/App/Repositories/AuthRepository.php';
+require_once __DIR__ . '/jwt.php';
+require_once __DIR__ . '/../Config/Database.php';
+require_once __DIR__ . '/Response.php';
 
-use PDO;
-
-class AuthModel {
-
-    public function __construct($pdo){
-        $this ->pdo = $pdo;
-    }
-
-    public function findByEmail(string $email): ?array
+class Auth
+{
+    /**
+     * Retorna o token enviado no header Authorization.
+     */
+    private static function getToken(): ?string
     {
-        $stmt = $this->db->prepare(
-            "SELECT * FROM usuarios WHERE email = :email LIMIT 1"
-        );
-        $stmt->bindValue(':email', $email);
-        $stmt->execute();
-        $row = $stmt->fetch();
-        return $row ?: null;
+        $headers = getallheaders();
+
+        $authorization =
+            $headers['Authorization']
+            ?? $headers['authorization']
+            ?? null;
+
+        if (!$authorization) {
+            return null;
+        }
+
+        if (!preg_match('/Bearer\s(\S+)/', $authorization, $matches)) {
+            return null;
+        }
+
+        return $matches[1];
     }
 
+    /**
+     * Retorna os dados do usuário autenticado.
+     */
+    public static function user(): array
+    {
+        $token = self::getToken();
 
-} */
+        if (!$token) {
+            Response::json([
+                'success' => false,
+                'message' => 'Token não informado.'
+            ], 401);
+        }
+
+        $jwt = new JWTHandler(Database::getConnection());
+
+        $payload = $jwt->decodeToken($token);
+
+        if (!$payload) {
+            Response::json([
+                'success' => false,
+                'message' => 'Token inválido ou expirado.'
+            ], 401);
+        }
+
+        return $payload;
+    }
+
+    /**
+     * Retorna apenas o ID do usuário.
+     */
+    public static function id(): int
+    {
+        $user = self::user();
+
+        return (int)$user['sub'];
+    }
+
+    /**
+     * Verifica se o usuário está autenticado.
+     */
+    public static function check(): bool
+    {
+        return self::getToken() !== null;
+    }
+}

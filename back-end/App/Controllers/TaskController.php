@@ -1,62 +1,157 @@
 <?php
 
-require_once '../Models/Task.php';
-require_once '../Core/Response.php';
+require_once 'back-end/App/Repositories/TaskRepository.php';
+require_once 'back-end/App/Core/Response.php';
+require_once 'back-end/App/Core/Auth.php';
 
-class TaskController {
+class TaskController
+{
+    private PDO $pdo;
 
-    private $pdo;
-
-    public function __construct($pdo) {
+    public function __construct(PDO $pdo)
+    {
         $this->pdo = $pdo;
     }
 
-    public function register($data) {
+    /**
+     * Criar uma nova tarefa
+     */
+    public function create(array $data): void
+    {
         try {
-            // Cria o objeto Usuario (faz todas as validações)
-            $tarefa = new Tarefa($data['tarefa'], $data['horario'], $data['id_dia']);
 
-            // Salva no banco
-            $stmt = $this->pdo->prepare("INSERT INTO tarefas (tarefa, horario, id_dia) VALUES (?, ?, ?)");
-            $stmt->execute([
-                $tarefa->getNome(),
-                $tarefa->getEmail(),
-                $tarefa->getSenhaHash()
+            // Obtém o usuário autenticado pelo JWT
+            $userId = Auth::id();
+
+            // Validação dos campos obrigatórios
+            if (empty($data['column_id']) || empty($data['title'])) {
+                Response::json([
+                    'success' => false,
+                    'message' => 'Título e coluna são obrigatórios.'
+                ], 400);
+            }
+
+            $repository = new TaskRepository($this->pdo);
+
+            $taskId = $repository->create([
+                'user_id'       => $userId,
+                'column_id'     => $data['column_id'],
+                'title'         => $data['title'],
+                'is_recurring'  => $data['is_recurring'] ?? 0,
+                'week_days'     => $data['week_days'] ?? null,
+                'time_task'     => $data['time_task'] ?? null,
+                'active'        => 1
             ]);
 
             Response::json([
                 'success' => true,
-                'message' => 'Usuário cadastrado com sucesso!'
+                'message' => 'Tarefa criada com sucesso.',
+                'task_id' => $taskId
             ], 201);
 
-        } catch (InvalidArgumentException $e) {
+        } catch (Throwable $e) {
+
             Response::json([
                 'success' => false,
-                'message' => $e->getMessage()
-            ], 400);
-        } catch (Exception $e) {
-            Response::json([
-                'success' => false,
-                'message' => 'Erro interno no servidor'
+                'message' => $e->getMessage(),
+                'file'    => $e->getFile(),
+                'line'    => $e->getLine()
             ], 500);
+
         }
     }
 
-    public function login($data) {
-        // Implementação simples (melhorar depois)
-        $stmt = $this->pdo->prepare("SELECT * FROM usuarios WHERE email = ?");
-        $stmt->execute([$data['email']]);
-        $user = $stmt->fetch();
+    /**
+     * Lista todas as tarefas do usuário logado
+     */
+    public function list(): void
+    {
+        try {
 
-        if ($user && password_verify($data['senha'], $user['senha'])) {
-            $token = bin2hex(random_bytes(32));
+            $userId = Auth::id();
+
+            $repository = new TaskRepository($this->pdo);
+
+            $tasks = $repository->getByUser($userId);
+
             Response::json([
                 'success' => true,
-                'token' => $token,
-                'user' => ['id' => $user['id'], 'nome' => $user['nome']]
+                'tasks'   => $tasks
             ]);
-        } else {
-            Response::json(['success' => false, 'message' => 'Credenciais inválidas'], 401);
+
+        } catch (Throwable $e) {
+
+            Response::json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+
+        }
+    }
+
+    /**
+     * Atualizar tarefa
+     */
+    public function update(int $taskId, array $data): void
+    {
+        try {
+
+            $userId = Auth::id();
+
+            $repository = new TaskRepository($this->pdo);
+
+            $repository->update($taskId, $userId, $data);
+
+            Response::json([
+                'success' => true,
+                'message' => 'Tarefa atualizada com sucesso.'
+            ]);
+
+        } catch (Throwable $e) {
+
+            Response::json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+
+        }
+    }
+
+    /**
+     * Excluir tarefa
+     */
+    public function delete(array $data): void
+    {
+        try {
+
+            if (empty($data['task_id'])) {
+                Response::json([
+                    'success' => false,
+                    'message' => 'Task ID é obrigatório.'
+                ], 400);
+            }
+
+            $userId = Auth::id();
+
+            $repository = new TaskRepository($this->pdo);
+
+            $repository->delete(
+                (int)$data['task_id'],
+                $userId
+            );
+
+            Response::json([
+                'success' => true,
+                'message' => 'Tarefa removida com sucesso.'
+            ]);
+
+        } catch (Throwable $e) {
+
+            Response::json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+
         }
     }
 }

@@ -1,141 +1,159 @@
 * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
 body {
-  background-color: #13293D;
-  color: white;
-  font-family: Arial, Helvetica, sans-serif;
-  min-height: 100vh;
-  padding: 20px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    color: #333;
+    min-height: 100vh;
+    padding: 20px;
 }
+
+/* Header */
 header {
-  margin-bottom: 30px;
+    text-align: center;
+    margin-bottom: 30px;
+    color: white;
 }
 
+header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 8px;
+}
 
+/* Botão Flutuante */
 .botao-flutuante {
-    position: fixed; /* Fixa o botão na tela */
-    bottom: 20px;    /* Distância da parte inferior */
-    right: 20px;     /* Distância da parte direita */
-    z-index: 9999;   /* Garante que ele fique na frente de outros elementos */
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    z-index: 9999;
     
-    /* Estética do botão */
     width: 70px;
     height: 70px;
-    border-radius: 50%; /* Deixa o botão redondo */
-    background-color: #1b98e0; /* Cor de fundo (ex: verde WhatsApp) */
+    border-radius: 50%;
+    background-color: #4f46e5;
     color: white;
     border: none;
     font-size: 28px;
     cursor: pointer;
     background-image: url('images/reverse.png');
-    background-size: 90%;        /* Ajusta o tamanho da imagem dentro do botão */
-    background-repeat: no-repeat; /* Evita que a imagem se repita */
-    background-position: center 70%;  /* Centraliza a imagem */
+    background-size: 85%;
+    background-repeat: no-repeat;
+    background-position: center;
     
-    /* Sombra para dar o efeito de flutuação */
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.25); 
-    
-    /* Transição suave ao passar o mouse */
-    transition: transform 0.2s ease, background-color 0.2s;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
+    transition: all 0.3s ease;
 }
 
-/* Efeito ao passar o mouse */
 .botao-flutuante:hover {
-    transform: scale(1.1); /* Aumenta levemente o botão */
-    background-color: #247ba0;
+    transform: scale(1.12);
+    background-color: #4338ca;
+    box-shadow: 0 15px 25px rgba(0, 0, 0, 0.3);
 }
 
-#formulario {
-    display: none;
-}
-
-.card {
-    color: antiquewhite;
-    background: #006494;
-    padding: 40px;
-    border-radius: 60px;
-}
-
+/* Container Principal */
 .agenda {
     display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 1400px;
+    margin: 0 auto;
 }
 
+/* Colunas (Dias) */
 .dia {
-    width: 300px;
-    min-height: 500px;
-    text-align: center;
+    background: white;
+    width: 320px;
+    min-height: 550px;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    padding: 20px;
+    overflow-y: auto;
 }
 
+.dia h2 {
+    text-align: center;
+    color: #4f46e5;
+    margin-bottom: 20px;
+    font-size: 1.4rem;
+}
+
+/* Cards das tarefas */
 .card {
-    margin: 10px;
-    padding: 10px;
-    border-radius: 10px;
+    background: #f8fafc;
+    padding: 15px;
+    margin-bottom: 12px;
+    border-radius: 12px;
+    border-left: 5px solid #4f46e5;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: translateX(5px);
+}
+
+/* Formulário Flutuante */
+#formulario {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
+    background: white;
+    padding: 35px;
+    border-radius: 16px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+    width: 100%;
+    max-width: 400px;
 }
 
 #formulario form {
-
     display: flex;
     flex-direction: column;
+    gap: 16px;
+}
 
-    gap: 12px;
-
-    width: 350px;
-
-    padding: 25px;
-
-    border-radius: 12px;
+#formulario label {
+    font-weight: 600;
+    color: #374151;
 }
 
 #formulario input,
 #formulario select {
-
-    padding: 10px;
-
-    border-radius: 8px;
-
-    font-size: 16px;
+    padding: 12px 14px;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 1rem;
+    transition: all 0.3s;
 }
 
-#formulario label {
-    font-weight: bold;
+#formulario input:focus,
+#formulario select:focus {
+    border-color: #4f46e5;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
 }
 
 #formulario button {
-
-    padding: 12px;
-
+    padding: 14px;
+    background: #4f46e5;
+    color: white;
     border: none;
-
-    border-radius: 8px;
-
+    border-radius: 10px;
+    font-size: 1.1rem;
+    font-weight: bold;
     cursor: pointer;
-
-    font-size: 16px;
+    margin-top: 10px;
+    transition: all 0.3s;
 }
 
-#formulario {
-    display: none;
-
-    position: fixed;
-
-    top: 50%;
-    left: 50%;
-
-    transform: translate(-50%, -50%);
-
-    z-index: 1000;
-    background-color: #006494;
-    border-radius: 10%; /* Deixa o botão redondo */
-
-}
-
-.dia {
-  background-color: antiquewhite;
-  color: #13293D;
-  border-radius: 5%; /* Deixa o botão redondo */
-  width: 500px;
+#formulario button:hover {
+    background: #4338ca;
+    transform: translateY(-2px);
 }

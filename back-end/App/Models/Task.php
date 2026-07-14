@@ -1,5 +1,5 @@
 <?php
-/*
+
 class Task {
     private $pdo;
 
@@ -18,10 +18,11 @@ class Task {
 
     public function create($data) {
         $stmt = $this->pdo->prepare("INSERT INTO tasks 
-            (user_id, column_id, title, time_, is_recurring, week_days, active, created_at, update_at) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            (task_id, user_id, column_id, title, is_recurring, week_days, time_task, active, created_at, update_at) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
         
         return $stmt->execute([
+            $data['task_id'],
             $data['user_id'],
             $data['column_id'],
             $data['title'],
@@ -41,4 +42,4 @@ class Task {
     public function delete($id, $user_id) {
         // ... (implementar depois)
     }
-} */
+} 

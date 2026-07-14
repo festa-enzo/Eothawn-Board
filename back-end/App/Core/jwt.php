@@ -11,7 +11,7 @@ class JWTHandler
     private string         $algorithm;
     private int            $accessTtl;
     private int            $refreshTtl;
-    private                $pdo;
+    private PDO $pdo;
 
     public function __construct(PDO $pdo)
     {
@@ -39,25 +39,25 @@ class JWTHandler
 
     public function generateRefreshToken(int $user_id): string
     {
-        $refreshToken = bin2hex(random_bytes(64)); // Token longo e seguro
+        $refresh_token = bin2hex(random_bytes(64)); // Token longo e seguro
 
-        $expiresAt = date('Y-m-d H:i:s', time() + $this->refreshTtl);
+        $expires_at = date('Y-m-d H:i:s', time() + $this->refreshTtl);
 
         $stmt = $this->pdo->prepare("
             INSERT INTO refresh_tokens (user_id, refresh_token, expires_at) 
             VALUES (?, ?, ?)
         ");
 
-        $stmt->execute([$user_id, $refreshToken, $expiresAt]);
+        $stmt->execute([$user_id, $refresh_token, $expires_at]);
 
-        return $refreshToken;
+        return $refresh_token;
     }
 
-    public function decodeToken($token) {
+    public function decodeToken(string $token): ?array {
         try {
             $decoded = JWT::decode($token, new Key($this->secret, $this->algorithm));
             return (array) $decoded;
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             return null;
         }
     }

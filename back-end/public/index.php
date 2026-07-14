@@ -6,6 +6,9 @@ require_once __DIR__ . '/../Config/Database.php';
 require_once '../App/Core/Response.php';
 require_once '../App/Core/Auth.php';
 
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/..');
+$dotenv->load();
+
 Response::cors();
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
