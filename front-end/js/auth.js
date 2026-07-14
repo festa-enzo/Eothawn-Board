@@ -36,7 +36,8 @@ if (form) {
             console.log("Login realizado!", data);
 
             if (data.success) {
-                localStorage.setItem('token', data.token);
+                localStorage.setItem("token", data.accessToken);
+                console.log("Salvou:", localStorage.getItem("token"));
                 localStorage.setItem('user', JSON.stringify(data.user));
 
                 mensagem.style.color = 'green';

@@ -60,7 +60,7 @@ class TaskRepository extends BaseRepository
     /**
      * Cria uma nova tarefa
      */
-    public function create(array $data): int
+    public function createTask(array $data): int
     {
         $stmt = $this->db->prepare("
             INSERT INTO tasks
@@ -101,7 +101,7 @@ class TaskRepository extends BaseRepository
     /**
      * Atualiza uma tarefa
      */
-    public function update(int $taskId, int $userId, array $data): bool
+    public function updateTask(int $taskId, int $userId, array $data): bool
     {
         $stmt = $this->db->prepare("
             UPDATE tasks
@@ -117,7 +117,7 @@ class TaskRepository extends BaseRepository
                 AND user_id = :user_id
         ");
 
-        return $stmt->execute([
+        return $stmt->executeTask([
             ':task_id'       => $taskId,
             ':user_id'       => $userId,
             ':column_id'     => $data['column_id'],
@@ -132,7 +132,7 @@ class TaskRepository extends BaseRepository
     /**
      * Remove uma tarefa
      */
-    public function delete(int $taskId, int $userId): bool
+    public function deleteTask(int $taskId, int $userId): bool
     {
         $stmt = $this->db->prepare("
             DELETE FROM tasks
@@ -150,7 +150,7 @@ class TaskRepository extends BaseRepository
     /**
      * Busca uma tarefa específica do usuário
      */
-    public function findById(int $taskId, int $userId): ?array
+    public function TaskById(int $taskId, int $userId): ?array
     {
         $stmt = $this->db->prepare("
             SELECT *
