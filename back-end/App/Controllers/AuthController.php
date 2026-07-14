@@ -12,35 +12,70 @@ class AuthController {
         $this->pdo = $pdo;
     }
 
-    public function register($data) {
-        try {
-            // Cria o objeto Usuario (faz todas as validações)
-            $usuario = new Usuario($data['name'], $data['email'], $data['password']);
+public function register($data) {
+    try {
+        // Validação básica dos campos
+        if (empty($data['nome']) || empty($data['email']) || empty($data['senha'])) {
+            Response::json([
+                'success' => false, 
+                'message' => 'Todos os campos são obrigatórios'
+            ], 400);
+        }
 
-            // Salva no banco
-            $stmt = $this->pdo->prepare("INSERT INTO users (name, email, password) VALUES (?, ?, ?)");
-            $stmt->execute([
-                $usuario->getNome(),
-                $usuario->getEmail(),
-                $usuario->getSenhaHash()
-            ]);
+        $usuarioModel = new Usuario($this->pdo);
 
+        // Verifica se o email já existe
+        if ($usuarioModel->findByEmail($data['email'])) {
+            Response::json([
+                'success' => false, 
+                'message' => 'Este email já está cadastrado'
+            ], 409);
+        }
+
+        // Cria o objeto Usuario (faz as validações de nome, email e senha)
+        $usuario = new Usuario(
+            $data['nome'], 
+            $data['email'], 
+            $data['senha']
+        );
+
+        // Salva no banco
+        $stmt = $this->pdo->prepare("
+            INSERT INTO usuarios (nome, email, senha) 
+            VALUES (?, ?, ?)
+        ");
+
+        $sucesso = $stmt->execute([
+            $usuario->getNome(),
+            $usuario->getEmail(),
+            $usuario->getSenhaHash()
+        ]);
+
+        if ($sucesso) {
             Response::json([
                 'success' => true,
                 'message' => 'Usuário cadastrado com sucesso!'
             ], 201);
-
-        } catch (InvalidArgumentException $e) {
+        } else {
             Response::json([
                 'success' => false,
-                'message' => $e->getMessage()
-            ], 400);
-        } catch (Exception $e) {
-            Response::json([
-                'success' => false,
-                'message' => 'Erro interno no servidor'
+                'message' => 'Erro ao salvar usuário no banco'
             ], 500);
         }
+
+    } catch (InvalidArgumentException $e) {
+        // Erros de validação (nome, email, senha)
+        Response::json([
+            'success' => false,
+            'message' => $e->getMessage()
+        ], 400);
+
+    } catch (Exception $e) {
+        Response::json([
+            'success' => false,
+            'message' => 'Erro interno no servidor'
+        ], 500);
+    }
     }
 
     public function login($data) {

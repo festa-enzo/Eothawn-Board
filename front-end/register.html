@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt_BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro - Eothawn</title>
+
+    <link rel="stylesheet" href="style/register.css">
+
+</head>
+<body>
+    <div class="register-box">
+    <div class="header">
+        <h1>📅 Criar Conta</h1>
+    </div>
+    <div class="form-container">
+        <form id="registerForm">
+            <div class="form-group">
+                <label for="nome">Nome completo</label>
+                <input type="text" id="nome" required>
+            </div>
+            <div class="form-group">
+                <label for="email">E-mail</label>
+                <input type="email" id="email" required>
+            </div>
+            <div class="form-group">
+                <label for="senha">Senha</label>
+                <input type="password" id="senha" required minlength="8">
+            </div>
+            <div class="form-group">
+                <label for="confirmar_senha">Confirmar Senha</label>
+                <input type="password" id="confirmar_senha" required minlength="8">
+            </div>
+            <button type="submit" class="btn-register">Cadastrar</button>
+        </form>
+        <div id="mensagem" class="error-msg"></div>
+        <div class="footer">
+            Já tem conta? <a href="login.html">Faça login</a>
+        </div>
+    </div>
+</div>
+    <script src="js/register.js"></script>
+</body>
+</html>
