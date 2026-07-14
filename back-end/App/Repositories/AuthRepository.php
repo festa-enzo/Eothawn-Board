@@ -6,7 +6,7 @@ use PDO;
 
 class AuthRepository extends BaseRepository
 {
-    protected string $table = 'user';
+    protected string $table = 'users';
 
     protected array $sortableColumns = ['id', 'name', 'email', 'created_at'];
 
@@ -43,7 +43,7 @@ class AuthRepository extends BaseRepository
         );
         $stmt->execute([
             ':user_id'    => $userId,
-            ':refresh_token'      => $token,
+            ':token'      => $token,
             ':expires_at' => $expiresAt,
         ]);
     }
@@ -66,7 +66,7 @@ class AuthRepository extends BaseRepository
     public function revokeRefreshToken(string $token): void
     {
         $this->db->prepare(
-            "DELETE FROM refresh_tokens WHERE token = :token"
+            "DELETE FROM refresh_tokens WHERE refresh_token = :token"
         )->execute([':token' => $token]);
     }
 }

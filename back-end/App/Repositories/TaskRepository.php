@@ -22,17 +22,18 @@ class TaskRepository extends BaseRepository {
 
     public function create($data) {
         $stmt = $this->pdo->prepare("INSERT INTO tasks 
-            (user_id, column_id, title, time_, is_recurring, week_days, active, created_at, update_at) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            (task_id, user_id, column_id, title, is_recurring, week_days, time_task, active, created_at, update_at) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
         
         return $stmt->execute([
+            $data['task_id'],
             $data['user_id'],
             $data['column_id'],
             $data['title'],
-            $data['time_'] ?? null,            
             $data['is_recurring'] ?? 0,
-            $data['active'] ?? null,
-            $data['dias_semana'] ?? null,
+            $data['week_days'] ?? null,
+            $data['time_task'] ?? null,            
+            $data['active'] ?? null,           
             $data['created_at'],
             $data['update_at']
         ]);

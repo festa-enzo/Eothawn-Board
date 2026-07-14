@@ -1,4 +1,9 @@
 <?php
+
+require_once 'back-end/App/Models/nome.php';
+require_once 'back-end/App/Models/email.php';
+require_once 'back-end/App/Models/senha.php';
+
 class Usuario{
 
     Private nome $nome;
@@ -11,7 +16,7 @@ class Usuario{
 
         $this->email = $email;
 
-        $this->senha = password_hash($senha, PASSWORD_BCRYPT);
+        $this->senha = $senha;
     }
 
     public function getNome(): string {
@@ -24,5 +29,13 @@ class Usuario{
 
     public function getSenhaHash(): string {
         return $this->senha->getValue();
+    }
+    
+    public static function createFromRaw(string $nomeRaw, string $emailRaw, string $senhaRaw): self {
+        $nome  = new nome($nomeRaw);
+        $email = new email($emailRaw);
+        $senha = new senha($senhaRaw);   // O Value Object Senha deve fazer o hash
+
+        return new self($nome, $email, $senha);
     }
 }

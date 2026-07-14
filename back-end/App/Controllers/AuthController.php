@@ -3,6 +3,7 @@
 require_once 'back-end/App/Models/User.php';
 require_once 'back-end/App/Repositories/AuthRepository.php';
 require_once 'back-end/App/Core/Response.php';
+require_once 'back-end/App/Core/jwt.php'; // ajuste o caminho se necessário
 
 class AuthController {
 
@@ -22,7 +23,7 @@ public function register($data) {
             ], 400);
         }
 
-        $usuarioModel = new Usuario($this->pdo);
+        $usuarioModel = new AuthRepository($this->pdo);
 
         // Verifica se o email já existe
         if ($usuarioModel->findByEmail($data['email'])) {
@@ -33,18 +34,14 @@ public function register($data) {
         }
 
         // Cria o objeto Usuario (faz as validações de nome, email e senha)
-        $usuario = new Usuario(
-            $data['nome'], 
-            $data['email'], 
+        $usuario = Usuario::createFromRaw(
+            $data['nome'],
+            $data['email'],
             $data['senha']
         );
 
         // Salva no banco
-        $stmt = $this->pdo->prepare("
-            INSERT INTO usuarios (nome, email, senha) 
-            VALUES (?, ?, ?)
-        ");
-
+        $stmt = $this->pdo->prepare("INSERT INTO users (name, email, password) VALUES (?, ?, ?)");
         $sucesso = $stmt->execute([
             $usuario->getNome(),
             $usuario->getEmail(),
@@ -69,46 +66,64 @@ public function register($data) {
             'success' => false,
             'message' => $e->getMessage()
         ], 400);
-
+    
     } catch (Exception $e) {
         Response::json([
             'success' => false,
             'message' => 'Erro interno no servidor'
         ], 500);
-    }
-    }
+  }
+  }
 
-    public function login($data) {
-    $usuarioModel = new AuthRepository($this->pdo);
-    $user = $usuarioModel->findByEmail($data['email']);
+public function login($data) {
+        try {
+            if (empty($data['email']) || empty($data['senha'])) {
+                Response::json([
+                    'success' => false,
+                    'message' => 'E-mail e senha são obrigatórios'
+                ], 400);
+            }
 
-    if ($user && password_verify($data['password'], $user['password'])) {
-        
-        $jwtHandler = new JWTHandler($this->pdo);
+            $usuarioModel = new AuthRepository($this->pdo);
+            $user = $usuarioModel->findByEmail($data['email']);
+            
+            if (!$user || !password_verify($data['senha'], $user['password'])) {
+                Response::json([
+                    'success' => false,
+                    'message' => 'E-mail ou senha inválidos.'
+                ], 401);
+                return;
+            }
 
-        $accessToken  = $jwtHandler->generateAccessToken($user);
-        $refreshToken = $jwtHandler->generateRefreshToken($user['id']);
+            $jwtHandler = new JWTHandler($this->pdo);
 
-        // Envia Refresh Token como Cookie seguro
-        setcookie('refresh_token', $refreshToken, [
-            'expires'  => time() + $jwtHandler->refreshTtl, // ou usar $this->refreshTtl
-            'path'     => '/',
-            'httponly' => true,
-            'secure'   => false,     // mude para true em produção (HTTPS)
-            'samesite' => 'Strict'
-        ]);
+            $accessToken  = $jwtHandler->generateToken($user);
 
-        Response::json([
-            'success'     => true,
-            'accessToken' => $accessToken,
-            'user'        => ['id' => $user['id'], 'nome' => $user['name']]
-        ]);
+            $refreshToken = $jwtHandler->generateRefreshToken($user['id']);
 
-        return;
-    }
-    Response::json([
-        'success' => false,
-        'message' => 'E-mail ou senha inválidos.'
-    ], 401);
+            // Cookie Refresh Token
+            setcookie('refresh_token', $refreshToken, [
+                'expires'  => time() + 604800, // 7 dias
+                'path'     => '/',
+                'httponly' => true,
+                'secure'   => false,
+                'samesite' => 'Strict'
+            ]);
+
+            Response::json([
+                'success'     => true,
+                'accessToken' => $accessToken,
+                'user'        => [
+                    'id'   => $user['id'],
+                    'name' => $user['name']
+                ]
+            ]);
+
+        } catch (Exception $e) {
+            Response::json([
+                'success' => false,
+                'message' => 'Erro interno no servidor'
+            ], 500);
+        }
     }
 }

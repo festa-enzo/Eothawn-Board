@@ -2,12 +2,13 @@
 
 class senha{
     
-    private string $senha;
+    private string $hash;
 
     public function __construct (string $senha){
 
         $this->validaSenha($senha);
         $this->senha=$senha;
+        $this->hash = password_hash($senha, PASSWORD_BCRYPT);   
     }
 
     private function validaSenha($senha){
@@ -18,6 +19,6 @@ class senha{
     }
 
     public function getValue(): string {
-        return $this->senha;
+        return $this->hash;
     }
 }

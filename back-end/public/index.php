@@ -1,6 +1,7 @@
 <?php
 
 // Carrega as configurações e classes principais
+require_once __DIR__ . '/../../vendor/autoload.php';
 require_once __DIR__ . '/../Config/Database.php';
 require_once '../App/Core/Response.php';
 require_once '../App/Core/Auth.php';
