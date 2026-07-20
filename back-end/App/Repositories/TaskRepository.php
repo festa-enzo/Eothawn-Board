@@ -16,9 +16,9 @@ class TaskRepository extends BaseRepository
         'created_at'
     ];
 
-    public function __construct(PDO $db)
+    public function __construct(PDO $pdo)
     {
-        parent::__construct($db);
+        parent::__construct($pdo);
     }
 
     /**
@@ -60,43 +60,47 @@ class TaskRepository extends BaseRepository
     /**
      * Cria uma nova tarefa
      */
-    public function createTask(array $data): int
-    {
-        $stmt = $this->db->prepare("
-            INSERT INTO tasks
-            (
-                user_id,
-                column_id,
-                title,
-                is_recurring,
-                week_days,
-                time_task,
-                active
-            )
-            VALUES
-            (
-                :user_id,
-                :column_id,
-                :title,
-                :is_recurring,
-                :week_days,
-                :time_task,
-                :active
-            )
-        ");
+public function createTask(array $data)
+{
+    $stmt = $this->db->prepare("
+        SELECT column_id
+        FROM columns
+        WHERE user_id = ?
+          AND position = ?
+        LIMIT 1
+    ");
 
-        $stmt->execute([
-            ':user_id'       => $data['user_id'],
-            ':column_id'     => $data['column_id'],
-            ':title'         => $data['title'],
-            ':is_recurring'  => $data['is_recurring'] ?? 0,
-            ':week_days'     => $data['week_days'] ?? null,
-            ':time_task'     => $data['time_task'] ?? null,
-            ':active'        => $data['active'] ?? 1
-        ]);
+    $stmt->execute([
+        $data['user_id'],
+        $data['column_id']
+    ]);
 
-        return (int) $this->db->lastInsertId();
+    $column = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$column) {
+        throw new Exception("Coluna não encontrada.");
     }
+
+    $stmt = $this->db->prepare("
+        INSERT INTO tasks
+        (user_id, column_id, title, is_recurring, week_days, time_task, active)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+    ");
+
+    $stmt->execute([
+        $data['user_id'],
+        $column['column_id'],
+        $data['title'],
+        $data['is_recurring'],
+        $data['week_days'],
+        $data['time_task'],
+        $data['active']
+    ]);
+
+    $id = (int) $this->db->lastInsertId();
+
+    return $this->findById($id);
+}
 
     /**
      * Atualiza uma tarefa
@@ -117,7 +121,7 @@ class TaskRepository extends BaseRepository
                 AND user_id = :user_id
         ");
 
-        return $stmt->executeTask([
+        return $stmt->execute([
             ':task_id'       => $taskId,
             ':user_id'       => $userId,
             ':column_id'     => $data['column_id'],
@@ -136,21 +140,22 @@ class TaskRepository extends BaseRepository
     {
         $stmt = $this->db->prepare("
             DELETE FROM tasks
-            WHERE
-                task_id = :task_id
-                AND user_id = :user_id
+            WHERE task_id = :task_id
+            AND user_id = :user_id
         ");
 
-        return $stmt->execute([
+        $stmt->execute([
             ':task_id' => $taskId,
             ':user_id' => $userId
         ]);
-    }
+
+    return $stmt->rowCount() > 0;
+}
 
     /**
      * Busca uma tarefa específica do usuário
      */
-    public function TaskById(int $taskId, int $userId): ?array
+    public function findTaskById(int $taskId, int $userId): ?array
     {
         $stmt = $this->db->prepare("
             SELECT *
@@ -170,4 +175,19 @@ class TaskRepository extends BaseRepository
 
         return $task ?: null;
     }
+    public function findById(int $taskId): ?array
+    {
+        $stmt = $this->db->prepare("
+            SELECT *
+            FROM tasks
+            WHERE task_id = :id
+            LIMIT 1
+        ");
+
+    $stmt->execute([
+        ':id' => $taskId
+    ]);
+
+    return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
+}
 }

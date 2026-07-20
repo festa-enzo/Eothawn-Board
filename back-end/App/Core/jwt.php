@@ -35,6 +35,11 @@ class JWTHandler
     ];
 
         return JWT::encode($payload, $this->secret, $this->algorithm);
+
+        Response::json([
+    'secret' => $this->secret,
+    'algoritmo' => $this->algorithm
+]);
     }
 
     public function generateRefreshToken(int $user_id): string
@@ -58,7 +63,12 @@ class JWTHandler
             $decoded = JWT::decode($token, new Key($this->secret, $this->algorithm));
             return (array) $decoded;
         } catch (Throwable $e) {
-            return null;
+            Response::json([
+            'erro' => $e->getMessage(),
+            'classe' => get_class($e),
+            'secret' => $this->secret,
+            'algoritmo' => $this->algorithm
+        ], 500);
         }
     }
     

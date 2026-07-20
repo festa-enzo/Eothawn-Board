@@ -1,6 +1,7 @@
 const botao = document.getElementById("btnNovaTarefa");
 const formulario = document.getElementById("formulario");
 const form = document.querySelector("form");
+let tarefaEditando = null;
 
 const API = "http://api.eothawn.com/api/tasks";
 
@@ -10,13 +11,13 @@ const API = "http://api.eothawn.com/api/tasks";
 
 botao.addEventListener("click", () => {
 
-    if(formulario.style.display === "block"){
-        formulario.style.display = "none";
-    } else {
-        formulario.style.display = "block";
-    }
+    formulario.style.display =
+        formulario.style.display === "block"
+            ? "none"
+            : "block";
 
 });
+
 // ===============================
 // Quando abrir a página
 // ===============================
@@ -39,11 +40,19 @@ form.addEventListener("submit", async (event) => {
 
     const token = localStorage.getItem("token");
 
+    let url = API;
+    let metodo = "POST";
+
+    if (tarefaEditando !== null) {
+        url = `${API}/${tarefaEditando}`;
+        metodo = "PUT";
+    }
+
     try {
 
-        const response = await fetch(API, {
+        const response = await fetch(url, {
 
-            method: "POST",
+            method: metodo,
 
             headers: {
                 "Content-Type": "application/json",
@@ -68,7 +77,12 @@ form.addEventListener("submit", async (event) => {
             return;
         }
 
+        tarefaEditando = null;
+
         form.reset();
+
+        form.querySelector("button[type='submit']").textContent = "Salvar";
+
         formulario.style.display = "none";
 
         carregarTarefas();
@@ -102,11 +116,17 @@ async function carregarTarefas() {
 
         const data = await response.json();
 
+        if (!response.ok) {
+            alert(data.message);
+            return;
+        }
+
         limparColunas();
 
         data.tasks.forEach(task => {
 
             adicionarCard(
+                task.task_id,
                 task.title,
                 converterNumero(task.column_id),
                 task.time_task
@@ -126,7 +146,7 @@ async function carregarTarefas() {
 // Criar Card
 // ===============================
 
-function adicionarCard(tarefa, dia, horario) {
+function adicionarCard(id, tarefa, dia, horario) {
 
     const listas = {
 
@@ -142,18 +162,105 @@ function adicionarCard(tarefa, dia, horario) {
 
     const coluna = document.getElementById(listas[dia]);
 
+    if (!coluna) return;
+
     const card = document.createElement("div");
 
     card.classList.add("card");
+    card.dataset.id = id;
 
-    card.textContent = `${horario} | ${tarefa}`;
+    card.innerHTML = `
+        <span>${horario} | ${tarefa}</span>
+        <button class="btnExcluir">🗑</button>
+    `;
+
+    card.addEventListener("click", () => {
+
+        editarTask({
+            id: id,
+            titulo: tarefa,
+            dia: dia,
+            horario: horario
+        });
+
+    });
+
+    card.querySelector(".btnExcluir").addEventListener("click", async (event) => {
+
+        event.stopPropagation();
+
+        await excluirTask(id);
+
+    });
 
     coluna.appendChild(card);
 
 }
 
 // ===============================
-// Limpar todas as colunas
+// Alterar Tarefa
+// ===============================
+    function editarTask(task){
+
+        tarefaEditando = task.id;
+
+        document.getElementById("tarefa").value = task.titulo;
+        document.getElementById("dia").value = task.dia;
+        document.getElementById("horario").value = task.horario;
+
+        formulario.style.display = "block";
+
+        form.querySelector("button[type='submit']").textContent = "Atualizar";
+
+}
+// ===============================
+// Excluir tarefa
+// ===============================
+
+async function excluirTask(taskId) {
+
+    if (!confirm("Deseja excluir esta tarefa?"))
+        return;
+
+    const token = localStorage.getItem("token");
+
+    try {
+
+        const response = await fetch(`${API}/${taskId}`, {
+
+            method: "DELETE",
+
+            headers: {
+
+                "Authorization": `Bearer ${token}`
+
+            }
+
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+
+            alert(data.message);
+            return;
+
+        }
+
+        carregarTarefas();
+
+    } catch (erro) {
+
+        console.error(erro);
+
+        alert("Erro ao excluir tarefa.");
+
+    }
+
+}
+
+// ===============================
+// Limpar colunas
 // ===============================
 
 function limparColunas() {
@@ -172,7 +279,11 @@ function limparColunas() {
 
     colunas.forEach(id => {
 
-        document.getElementById(id).innerHTML = "";
+        const coluna = document.getElementById(id);
+
+        if (coluna) {
+            coluna.innerHTML = "";
+        }
 
     });
 

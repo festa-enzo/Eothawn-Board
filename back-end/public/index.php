@@ -1,52 +1,71 @@
 <?php
 
-// Carrega as configurações e classes principais
+// ====================== CONFIGURAÇÕES INICIAIS ======================
 require_once __DIR__ . '/../../vendor/autoload.php';
 require_once __DIR__ . '/../Config/Database.php';
-require_once '../App/Core/Response.php';
-require_once '../App/Core/Auth.php';
+require_once __DIR__ . '/../App/Core/Response.php';
+require_once __DIR__ . '/../App/Core/Auth.php';
 
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/..');
 $dotenv->load();
 
+// ====================== CORS ======================
 Response::cors();
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
-    exit(0);   // Finaliza a requisição preflight
+    exit(0);
 }
-// Carrega as rotas
+
+// ====================== ROTAS ======================
 $routes = require_once '../routes/api.php';
 
 $pdo = Database::getConnection();
 
-#$uri = str_replace('\\', '', parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
-$uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+$uri    = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $method = $_SERVER['REQUEST_METHOD'];
 
-// Remove query string se existir (ex: ?id=1)
+// Remove query string
 $uri = strtok($uri, '?');
 
-// Verifica se a rota existe
-if (isset($routes[$method][$uri])) {
-    $controllerInfo = $routes[$method][$uri];
-    $controllerName = $controllerInfo[0];
-    $methodName     = $controllerInfo[1];
+$routeFound = false;
 
-    // Inclui o controller dinamicamente
-    require_once "../App/Controllers/{$controllerName}.php";
-
-    $controller = new $controllerName($pdo);
+foreach ($routes[$method] ?? [] as $routePath => $action) {
     
-    // Pega os dados da requisição
-    $data = json_decode(file_get_contents("php://input"), true) ?? $_POST;
+    // Suporte a rotas dinâmicas como /api/tasks/{id}
+    $pattern = preg_replace('/\{(\w+)\}/', '([^/]+)', $routePath);
+    $pattern = '#^' . $pattern . '$#';
 
-    // Chama o método do controller
-    $controller->$methodName($data);
+    if (preg_match($pattern, $uri, $matches)) {
+        $routeFound = true;
+        
+        $controllerName = $action[0];
+        $methodName     = $action[1];
 
-} else {
+        // Inclui o Controller
+        require_once "../App/Controllers/{$controllerName}.php";
+
+        $controller = new $controllerName($pdo);
+
+        // Dados da requisição (JSON ou form)
+        $data = json_decode(file_get_contents("php://input"), true) ?? $_POST;
+
+        // Chama o método do controller
+        if (!empty($params = array_slice($matches, 1))) {
+            // Rotas com parâmetro (ex: /api/tasks/123)
+            $controller->$methodName($params[0], $data);
+        } else {
+            // Rotas normais (login, register, index, etc)
+            $controller->$methodName($data);
+        }
+
+        break;
+    }
+}
+
+if (!$routeFound) {
     Response::json([
         'success' => false,
-        'message' => 'Rota não encontrada'
+        'message' => 'Rota não encontrada: ' . $uri
     ], 404);
 }

@@ -47,6 +47,33 @@ public function register($data) {
             $usuario->getEmail(),
             $usuario->getSenhaHash()
         ]);
+        
+        $userId = (int)$this->pdo->lastInsertId();
+        $columns = [
+        ['Segunda', 1],
+        ['Terça', 2],       
+        ['Quarta', 3],
+        ['Quinta', 4],
+        ['Sexta', 5],
+        ['Sábado', 6],
+        ['Domingo', 7],
+        ];
+
+        $stmtColumn = $this->pdo->prepare("
+            INSERT INTO columns (user_id, title, position)
+            VALUES (?, ?, ?)
+        ");
+
+foreach ($columns as $column) {
+
+    $stmtColumn->execute([
+        $userId,
+        $column[0],
+        $column[1]
+    ]);
+
+};
+        
 
         if ($sucesso) {
             Response::json([

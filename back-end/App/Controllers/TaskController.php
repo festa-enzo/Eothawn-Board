@@ -1,134 +1,124 @@
 <?php
 
-require_once __DIR__ . '/../Repositories/TaskRepository.php';
-require_once __DIR__ . '/../Core/Response.php';
-require_once __DIR__ . '/../Core/Auth.php';
+require_once 'back-end/App/Repositories/TaskRepository.php';
+require_once 'back-end/App/Core/Response.php';
+require_once 'back-end/App/Core/Auth.php';
 
-class TaskController
-{
-    private $pdo;
+class TaskController {
 
-    public function __construct($pdo)
-    {
+    private PDO $pdo;
+    private TaskRepository $taskRepository;
+
+    public function __construct(PDO $pdo) {
         $this->pdo = $pdo;
+        $this->taskRepository = new TaskRepository($pdo);
     }
 
     /**
-     * GET /api/tasks
+     * GET /api/tasks - Listar tarefas do usuário
      */
-    public function index()
-    {
+    public function index() {
         try {
+            $userId = Auth::requireAuth();   // ← Usa o Auth centralizado
 
-            $user = Auth::user();
-
-            if (!$user) {
-                Response::json([
-                    'success' => false,
-                    'message' => 'Usuário não autenticado.'
-                ], 401);
-            }
-
-            $tasks = $this->taskRepository->getByUser($user['id']);
+            $tasks = $this->taskRepository->getByUser($userId);
 
             Response::json([
                 'success' => true,
-                'tasks' => $tasks
+                'tasks'   => $tasks
             ]);
-
         } catch (Exception $e) {
-
             Response::json([
                 'success' => false,
-                'message' => $e->getMessage()
+                'message' => 'Erro ao buscar tarefas'
             ], 500);
-
         }
     }
 
     /**
-     * POST /api/tasks
+     * POST /api/tasks - Criar tarefa
      */
-    public function create($data)
-    {
+    public function create(array $data) {
         try {
+            $userId = Auth::requireAuth();
 
-            $user = Auth::user();
-
-            if (!$user) {
-                Response::json([
-                    'success' => false,
-                    'message' => 'Usuário não autenticado.'
-                ], 401);
-            }
-
-            if (empty($data['title']) || empty($data['column_id']) || empty($data['time_task'])) {
-
-                Response::json([
-                    'success' => false,
-                    'message' => 'Título, coluna e horário são obrigatórios.'
-                ], 400);
-
-            }
-
-            $task = $this->taskRepository->create([
-
-                'user_id'       => $user['id'],
-                'column_id'     => $data['column_id'],
-                'title'         => $data['title'],
-                'is_recurring'  => $data['is_recurring'] ?? 0,
-                'week_days'     => $data['week_days'] ?? null,
-                'time_task'     => $data['time_task'] ?? null,
-                'active'        => 1
-
-            ]);
-
-            Response::json([
-                'success' => true,
-                'message' => 'Tarefa criada com sucesso.',
-                'task' => $task
-            ], 201);
-
-        } catch (Exception $e) {
-
+        if (empty($data['title']) || empty($data['column_id'])) {
             Response::json([
                 'success' => false,
-                'message' => $e->getMessage()
-            ], 500);
+                'message' => 'Título e coluna são obrigatórios'
+            ], 400);
+        }
 
+        $taskData = [
+            'user_id'      => $userId,
+            'column_id'    => (int)$data['column_id'],
+            'title'        => trim($data['title']),
+            'is_recurring' => (int)($data['is_recurring'] ?? 0),
+            'week_days'    => $data['week_days'] ?? null,
+            'time_task'    => $data['time_task'] ?? null,
+            'active'       => 1
+        ];
+
+        $taskId = $this->taskRepository->createTask($taskData);
+
+        Response::json([
+            'success' => true,
+            'message' => 'Tarefa criada com sucesso!',
+            'task_id' => $taskId
+        ], 201);
+
+        } catch (Exception $e) {
+        // Isso ajuda muito a debugar
+            error_log("Erro ao criar tarefa: " . $e->getMessage());
+        
+            Response::json([
+                'success' => false,
+                'message' => 'Erro interno ao salvar tarefa: ' . $e->getMessage()
+            ], 500);
+        }
+}
+    // Update e Delete (exemplo resumido)
+    public function update(int $taskId, array $data) {
+        try {
+            $userId = Auth::requireAuth();
+            $success = $this->taskRepository->updateTask($taskId, $userId, $data);
+
+            Response::json([
+                'success' => $success,
+                'message' => $success ? 'Tarefa atualizada!' : 'Tarefa não encontrada'
+            ]);
+        } catch (Exception $e) {
+            Response::json(['success' => false, 'message' => 'Erro ao atualizar'], 500);
         }
     }
 
-    /**
-     * PUT /api/tasks/{id}
-     */
-    public function update($id, $data)
+    public function delete(int $taskId)
     {
-        Response::json([
-            'success' => false,
-            'message' => 'Ainda não implementado.'
-        ], 501);
-    }
+        try {
 
-    /**
-     * DELETE /api/tasks/{id}
-     */
-    public function delete($id)
-    {
-        Response::json([
-            'success' => false,
-            'message' => 'Ainda não implementado.'
-        ], 501);
-    }
+            $userId = Auth::requireAuth();
 
-    /**
-     * POST /api/tasks/move
-     */
-    public function move($data)
-    {
+            $success = $this->taskRepository->deleteTask($taskId, $userId);
+
+        if (!$success) {
+            Response::json([
+                'success' => false,
+                'message' => 'Tarefa não encontrada.'
+            ], 404);
+        }
+
+        Response::json([
+            'success' => true,
+            'message' => 'Tarefa excluída com sucesso.'
+        ]);
+
+    } catch (Exception $e) {
+
         Response::json([
             'success' => false,
-            'message' => 'Ainda não implementado.'
-        ], 501);
+            'message' => $e->getMessage()
+        ], 500);
+
     }
+}
 }

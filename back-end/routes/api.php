@@ -17,11 +17,6 @@ $routes = [
         '/api/columns'  => ['ColumnController', 'index'],
     ],
 
-#    'POST' => [
-#        '/api/tasks'           => ['TaskController', 'create'],
-#        '/api/tasks/move'      => ['TaskController', 'move'],      // mover tarefa entre colunas
-#    ],
-
     'PUT' => [
         '/api/tasks/{id}'      => ['TaskController', 'update'],
     ],
