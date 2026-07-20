@@ -190,4 +190,40 @@ public function createTask(array $data)
 
     return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
 }
+    public function moveTask(int $taskId, int $userId, int $position): bool
+{
+    // Descobre o column_id correspondente à posição
+    $stmt = $this->db->prepare("
+        SELECT column_id
+        FROM columns
+        WHERE user_id = :user_id
+          AND position = :position
+        LIMIT 1
+    ");
+
+    $stmt->execute([
+        ":user_id" => $userId,
+        ":position" => $position
+    ]);
+
+    $column = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$column) {
+        throw new Exception("Coluna não encontrada.");
+    }
+
+    // Atualiza a tarefa
+    $stmt = $this->db->prepare("
+        UPDATE tasks
+        SET column_id = :column_id
+        WHERE task_id = :task_id
+          AND user_id = :user_id
+    ");
+
+    return $stmt->execute([
+        ":column_id" => $column["column_id"],
+        ":task_id" => $taskId,
+        ":user_id" => $userId
+    ]);
+}
 }

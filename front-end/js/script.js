@@ -23,7 +23,11 @@ botao.addEventListener("click", () => {
 // ===============================
 
 document.addEventListener("DOMContentLoaded", () => {
+
+    configurarDragAndDrop();
+
     carregarTarefas();
+
 });
 
 // ===============================
@@ -142,6 +146,98 @@ async function carregarTarefas() {
 
 }
 
+function configurarDragAndDrop() {
+
+    const colunas = document.querySelectorAll(".dia > div");
+
+    colunas.forEach(coluna => {
+
+        coluna.addEventListener("dragover", (event) => {
+
+            event.preventDefault();
+
+        });
+    coluna.addEventListener("dragenter", () => {
+
+        coluna.classList.add("drop-hover");
+
+    });
+
+    coluna.addEventListener("dragleave", () => {
+
+        coluna.classList.remove("drop-hover");
+
+    });
+
+coluna.addEventListener("drop", async (event) => {
+
+    event.preventDefault();
+
+    coluna.classList.remove("drop-hover");
+
+    const taskId = event.dataTransfer.getData("text/plain");
+
+    const card = document.querySelector(`[data-id="${taskId}"]`);
+
+    if (!card) return;
+
+    // Move visualmente
+    coluna.appendChild(card);
+
+    const novaColuna = colunaParaNumero(coluna.id);
+
+    const token = localStorage.getItem("token");
+
+    try {
+
+        const response = await fetch(`${API}/move`, {
+
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            },
+
+            body: JSON.stringify({
+
+                task_id: parseInt(taskId),
+                column_id: novaColuna
+
+            })
+
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+
+            alert(data.message);
+
+            // Volta ao estado do banco
+            carregarTarefas();
+
+            return;
+
+        }
+
+        console.log("Movido com sucesso!");
+
+    } catch (erro) {
+
+        console.error(erro);
+
+        carregarTarefas();
+
+        alert("Erro ao mover a tarefa.");
+
+    }
+
+});
+    });
+
+}
+
 // ===============================
 // Criar Card
 // ===============================
@@ -170,21 +266,48 @@ function adicionarCard(id, tarefa, dia, horario) {
     card.dataset.id = id;
 
     card.innerHTML = `
-        <span>${horario} | ${tarefa}</span>
+    <span>${horario} | ${tarefa}</span>
+
+    <div class="cardAcoes">
+        <button class="btnEditar">✏️</button>
         <button class="btnExcluir">🗑</button>
-    `;
+    </div>
+`;
 
-    card.addEventListener("click", () => {
+    // Permite arrastar
+    card.draggable = true;
 
-        editarTask({
-            id: id,
-            titulo: tarefa,
-            dia: dia,
-            horario: horario
-        });
+    card.addEventListener("dragstart", (event) => {
+
+        event.dataTransfer.setData("text/plain", id);
+
+        card.classList.add("arrastando");
 
     });
 
+    card.addEventListener("dragend", () => {
+
+        card.classList.remove("arrastando");
+
+    });
+
+    // Editar
+    card.querySelector(".btnEditar").addEventListener("click",(event)=>{
+
+        event.stopPropagation();
+
+        editarTask({
+
+            id,
+            titulo:tarefa,
+            dia,
+            horario
+
+    });
+
+});
+
+    // Excluir
     card.querySelector(".btnExcluir").addEventListener("click", async (event) => {
 
         event.stopPropagation();
@@ -193,6 +316,7 @@ function adicionarCard(id, tarefa, dia, horario) {
 
     });
 
+    // Adiciona o card na coluna
     coluna.appendChild(card);
 
 }
@@ -202,15 +326,30 @@ function adicionarCard(id, tarefa, dia, horario) {
 // ===============================
     function editarTask(task){
 
-        tarefaEditando = task.id;
+    // Se clicou na mesma tarefa, fecha o formulário
+    if (tarefaEditando === task.id && formulario.style.display === "block") {
 
-        document.getElementById("tarefa").value = task.titulo;
-        document.getElementById("dia").value = task.dia;
-        document.getElementById("horario").value = task.horario;
+        tarefaEditando = null;
 
-        formulario.style.display = "block";
+        formulario.style.display = "none";
 
-        form.querySelector("button[type='submit']").textContent = "Atualizar";
+        form.reset();
+
+        form.querySelector("button[type='submit']").textContent = "Salvar";
+
+        return;
+
+    }
+
+    tarefaEditando = task.id;
+
+    document.getElementById("tarefa").value = task.titulo;
+    document.getElementById("dia").value = task.dia;
+    document.getElementById("horario").value = task.horario;
+
+    formulario.style.display = "block";
+
+    form.querySelector("button[type='submit']").textContent = "Atualizar";
 
 }
 // ===============================
@@ -330,5 +469,23 @@ function converterNumero(id) {
     };
 
     return dias[id];
+
+}
+
+function colunaParaNumero(id) {
+
+    const colunas = {
+
+        "segunda-lista": 1,
+        "terca-lista": 2,
+        "quarta-lista": 3,
+        "quinta-lista": 4,
+        "sexta-lista": 5,
+        "sabado-lista": 6,
+        "domingo-lista": 7
+
+    };
+
+    return colunas[id];
 
 }

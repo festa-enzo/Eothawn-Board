@@ -121,4 +121,44 @@ class TaskController {
 
     }
 }
+    public function move($data)
+    {
+        try {
+
+            $user = Auth::user();
+
+            if (!$user) {
+
+                Response::json([
+                    "success" => false,
+                    "message" => "Usuário não autenticado."
+                ],401);
+
+        }
+
+        $this->taskRepository->moveTask(
+
+            (int)$data["task_id"],
+            (int)$user["sub"],
+            (int)$data["column_id"]
+
+        );
+
+        Response::json([
+
+            "success" => true
+
+        ]);
+
+    } catch(Exception $e){
+
+        Response::json([
+
+            "success" => false,
+            "message" => $e->getMessage()
+
+        ],500);
+
+    }
+}
 }
