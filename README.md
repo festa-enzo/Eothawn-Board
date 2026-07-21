@@ -1,5 +1,5 @@
 
-<img width="1024" height="1024" alt="logo" src="https://github.com/user-attachments/assets/97d832ea-44d8-47b1-aee9-63edb5054a43" />
+<img width="1254" height="1254" alt="logo (2)" src="https://github.com/user-attachments/assets/e6a7bc04-016c-4ed9-a895-bc9f2127d165" />
 # 📅 EoThawn Board
 
 O **EoThawn Board** é uma aplicação web para gerenciamento de tarefas semanais, permitindo organizar atividades por dia da semana de forma simples, rápida e intuitiva.
