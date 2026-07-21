@@ -3,6 +3,8 @@ const formulario = document.getElementById("formulario");
 const form = document.querySelector("form");
 let tarefaEditando = null;
 
+verificarAutenticacao();
+
 const API = "http://api.eothawn.com/api/tasks";
 
 // ===============================
@@ -110,7 +112,7 @@ async function carregarTarefas() {
 
     try {
 
-        const response = await fetch(API, {
+        const response = await fetchAuth(API, {
 
             headers: {
                 "Authorization": `Bearer ${token}`

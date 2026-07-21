@@ -7,7 +7,7 @@ vendor/
 # Variáveis de ambiente
 # ==========================
 back-end/.env
-.env.*
+back-end/.env.*
 !.env.example
 
 # ==========================

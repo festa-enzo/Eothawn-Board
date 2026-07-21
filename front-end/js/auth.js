@@ -1,57 +1,52 @@
-const form = document.getElementById('LoginForm');
-const mensagem = document.getElementById('mensagem');
+// ===============================
+// Verifica se o usuário está logado
+// ===============================
 
-if (form) {
-    form.addEventListener('submit', async (e) => {
-        e.preventDefault();
+function verificarAutenticacao() {
 
-        const email = document.getElementById('email').value.trim();
-        const senha = document.getElementById('senha').value.trim();
+    const token = localStorage.getItem("token");
 
-        mensagem.textContent = '';
-        mensagem.style.color = 'red';
+    if (!token) {
+        window.location.href = "login.html";
+    }
 
-        // Validação básica no frontend
-        if (!email || !senha) {
-            mensagem.textContent = 'Por favor, preencha todos os campos.';
-            return;
-        }
+}
 
-        try {
-            const response = await fetch('http://api.eothawn.com/api/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ email, senha })
-            });
+// ===============================
+// Logout
+// ===============================
 
-            const data = await response.json();
+function logout() {
 
-            if (!response.ok) {
-             alert(data.message);
-             return;
-            }
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
 
-            console.log("Login realizado!", data);
+    window.location.href = "login.html";
 
-            if (data.success) {
-                localStorage.setItem("token", data.accessToken);
-                console.log("Salvou:", localStorage.getItem("token"));
-                localStorage.setItem('user', JSON.stringify(data.user));
+}
 
-                mensagem.style.color = 'green';
-                mensagem.textContent = 'Login realizado! Redirecionando...';
+// ===============================
+// Requisições autenticadas
+// ===============================
 
-                setTimeout(() => {
-                    window.location.href = 'index.html';   // ou 'dashboard.html'
-                }, 1200);
-            } else {
-                mensagem.textContent = data.message || 'Email ou senha incorretos.';
-            }
-        } catch (error) {
-            mensagem.textContent = 'Erro de conexão com o servidor. Verifique se o backend está rodando.';
-            console.error('Erro:', error);
-        }
-    });
+async function fetchAuth(url, options = {}) {
+
+    const token = localStorage.getItem("token");
+
+    options.headers = {
+        ...options.headers,
+        Authorization: `Bearer ${token}`
+    };
+
+    const response = await fetch(url, options);
+
+    if (response.status === 401) {
+
+        logout();
+        return null;
+
+    }
+
+    return response;
+
 }
