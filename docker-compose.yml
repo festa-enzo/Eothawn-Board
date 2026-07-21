@@ -1,0 +1,115 @@
+version: "3.9"
+
+services:
+
+  php:
+
+    build:
+      context: ./back-end
+
+    container_name: eothawn_php
+
+    restart: unless-stopped
+
+    volumes:
+      - ./back-end:/var/www/html
+
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+    networks:
+      - eothawn
+
+
+  nginx:
+
+    image: nginx:latest
+
+    container_name: eothawn_nginx
+
+    restart: unless-stopped
+
+    ports:
+      - "80:80"
+
+    volumes:
+      - ./front-end:/var/www/front-end
+      - ./back-end:/var/www/back-end
+      - ./docker/nginx:/etc/nginx/conf.d
+
+    depends_on:
+      - php
+
+    networks:
+      - eothawn
+
+
+  mysql:
+
+    image: mysql:8.4
+
+    container_name: eothawn_mysql
+
+    restart: unless-stopped
+
+    environment:
+
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: agenda_semanal
+      MYSQL_USER: agenda
+      MYSQL_PASSWORD: agenda123
+
+    ports:
+      - "3306:3306"
+
+    volumes:
+
+      - mysql_data:/var/lib/mysql
+
+      - ./docker/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+    healthcheck:
+
+      test: ["CMD","mysqladmin","ping","-h","localhost"]
+
+      timeout: 10s
+
+      retries: 10
+
+    networks:
+      - eothawn
+
+
+  phpmyadmin:
+
+    image: phpmyadmin/phpmyadmin
+
+    container_name: eothawn_phpmyadmin
+
+    restart: unless-stopped
+
+    ports:
+      - "8081:80"
+
+    environment:
+
+      PMA_HOST: mysql
+
+      MYSQL_ROOT_PASSWORD: root
+
+    depends_on:
+      - mysql
+
+    networks:
+      - eothawn
+
+
+volumes:
+
+    mysql_data:
+
+
+networks:
+
+    eothawn:

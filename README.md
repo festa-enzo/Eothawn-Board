@@ -5,7 +5,8 @@
 O **EoThawn Board** é uma aplicação web para gerenciamento de tarefas semanais, permitindo organizar atividades por dia da semana de forma simples, rápida e intuitiva.
 
 O projeto foi desenvolvido utilizando **PHP (MVC + API REST)** no back-end e **HTML, CSS e JavaScript Vanilla** no front-end.
-
+![PHP](https://img.shields.io/badge/PHP-8.3-777BB4?logo=php)
+![JavaScript](https://img.shields.io/badge/JavaScript-ES6-F7DF1E?logo=javascript)
 ---
 
 ## ✨ Funcionalidades
@@ -20,6 +21,8 @@ O projeto foi desenvolvido utilizando **PHP (MVC + API REST)** no back-end e **H
 - ✅ Persistência da movimentação das tarefas
 - ✅ Organização por colunas (Segunda a Domingo)
 - ✅ Interface moderna e responsiva
+- ✅ Proteção de páginas privadas
+- ✅ Logout automático quando o token expira
 
 ---
 
@@ -47,6 +50,7 @@ O projeto foi desenvolvido utilizando **PHP (MVC + API REST)** no back-end e **H
 
 - Nginx
 - Oracle Linux
+- Docker
 
 ---
 
@@ -132,38 +136,19 @@ Entre na pasta
 cd eothawn-board
 ```
 
-Instale as dependências do PHP
+### Executar
 
 ```bash
-cd back-end
-
-composer install
+docker compose up --build
 ```
 
-Crie o arquivo `.env`
 
-```bash
-cp .env.example .env
-```
+## 👤 Banco de Dados
 
-Configure:
+O banco é criado automaticamente pelo Docker.
 
-```env
-DB_HOST=
-DB_DATABASE=
-DB_USERNAME=
-DB_PASSWORD=
+Não é necessário executar scripts SQL manualmente.
 
-JWT_SECRET=
-```
-
-Configure o Nginx apontando para
-
-```
-back-end/public
-```
-
-e sirva o front-end normalmente.
 
 ---
 
@@ -175,14 +160,18 @@ e sirva o front-end normalmente.
 - [ ] Categorias
 - [ ] Prioridade das tarefas
 - [ ] Tema escuro
-- [ ] Upload de avatar
 - [ ] Compartilhamento de boards
+- [ ] Recuperação de senha
+- [ ] Perfil do usuário
 
 ---
 
 # 👨‍💻 Autor
 
 Desenvolvido por **festa-enzo**.
+GitHub: https://github.com/festa-enzo
+LinkedIn: www.linkedin.com/in/enzo-festa-4935b8308
+
 
 Projeto criado para estudos de desenvolvimento web utilizando PHP, JavaScript e arquitetura MVC.
 
