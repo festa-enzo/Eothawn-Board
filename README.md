@@ -6,6 +6,10 @@ O **EoThawn Board** é uma aplicação web para gerenciamento de tarefas semanai
 
 O projeto foi desenvolvido utilizando **PHP (MVC + API REST)** no back-end e **HTML, CSS e JavaScript Vanilla** no front-end.
 ![PHP](https://img.shields.io/badge/PHP-8.3-777BB4?logo=php)
+![MySQL](https://img.shields.io/badge/MySQL-8.4-4479A1?logo=mysql)
+![Docker](https://img.shields.io/badge/Docker-2496ED?logo=docker)
+![Nginx](https://img.shields.io/badge/Nginx-009639?logo=nginx)
+![JWT](https://img.shields.io/badge/JWT-black?logo=jsonwebtokens)
 ![JavaScript](https://img.shields.io/badge/JavaScript-ES6-F7DF1E?logo=javascript)
 ---
 
@@ -70,8 +74,13 @@ projeto-JS/
 │   ├── public/
 │   ├── config/
 │   ├── routes/
+│   ├── Dockerfile
 │   ├── composer.json
 │   └── .env
+│
+├── docker/
+│   ├──mysql/
+│   └──nginx/
 │
 ├── front-end/
 │   ├── style/
@@ -81,6 +90,8 @@ projeto-JS/
 │   ├── index.html
 │   └── login.html
 │
+├── docker-compose.yml
+├── .dockerignore
 ├── .gitignore
 └── README.md
 ```
