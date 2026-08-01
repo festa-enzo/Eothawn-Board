@@ -1,9 +1,27 @@
 const form = document.getElementById('LoginForm');
 const mensagem = document.getElementById('mensagem');
 
-if (localStorage.getItem("token")) {
-    window.location.href = "index.html";
+const token = localStorage.getItem("token");
+
+    function tokenExpirado(token) {
+
+    try {
+
+        const payload = JSON.parse(atob(token.split(".")[1]));
+
+        return payload.exp * 1000 <= Date.now();
+
+    } catch {
+
+        return true;
+
+    }
+
 }
+    if (token && !tokenExpirado(token)) {
+
+        window.location.replace("index.html");
+    }
 
 if (form) {
     form.addEventListener('submit', async (e) => {
@@ -48,7 +66,7 @@ if (form) {
                 mensagem.textContent = 'Login realizado! Redirecionando...';
 
                 setTimeout(() => {
-                    window.location.href = 'index.html';   // ou 'dashboard.html'
+                    window.location.href = 'index.html';   
                 }, 1200);
             } else {
                 mensagem.textContent = data.message || 'Email ou senha incorretos.';

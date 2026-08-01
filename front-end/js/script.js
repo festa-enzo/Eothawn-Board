@@ -5,6 +5,8 @@ let tarefaEditando = null;
 
 verificarAutenticacao();
 
+setInterval(verificarAutenticacao, 10000);
+
 const API = "http://api.eothawn.com/api/tasks";
 
 // ===============================
